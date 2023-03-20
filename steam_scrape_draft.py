@@ -63,6 +63,7 @@ def convert_to_price(arr):
 
 
 def strip_release_dates(date_str: str):
+    """convert release date representation to regular date representation"""
     return date_str.strip("Release Date:").replace('\n', '')
 
 
