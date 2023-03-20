@@ -1,0 +1,11 @@
+required modules to run steam_scraper:
+bs4
+fake_useragent
+selenium
+logging
+datetime
+tqdm
+argparse
+json
+requests
+os
