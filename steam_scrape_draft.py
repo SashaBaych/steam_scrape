@@ -106,4 +106,5 @@ def main():
     # print_all_info()
     # show_info_dict()
     pass
-if __name__ == '__main__'
+if __name__ == '__main__':
+    main()
