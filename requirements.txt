@@ -1,4 +1,4 @@
-required modules to run steam_scraper:
+required modules to run steam_main:
 bs4
 fake_useragent
 selenium
