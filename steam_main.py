@@ -6,7 +6,6 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 import logging
-import os
 import datetime
 from steam_game_classes import SteamGame, SteamGameCatalog
 from tqdm import tqdm
