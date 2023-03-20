@@ -7,28 +7,42 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 import logging
 import os
+import datetime
 from steam_game_classes import SteamGame, SteamGameCatalog
 from tqdm import tqdm
+import argparse
+import json
 
 
-# log_file_name = 'sel.log'
-#
-# if os.path.exists(log_file_name):
-#     os.remove(log_file_name)
-#
-# logging.basicConfig(filename=log_file_name, level=logging.INFO,
-#                     format='%(levelname)s - %(message)s')
+timestamp = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M")
+log_file_name = f"steam_scrape_{timestamp}.log"
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+fh = logging.FileHandler(log_file_name)
+fh.setLevel(logging.INFO)
+formatter = logging.Formatter('%(levelname)s - %(message)s')
+fh.setFormatter(formatter)
+logger.addHandler(fh)
 
+
+parser = argparse.ArgumentParser(
+    description='Retrieve detailed info on the given number of top selling rpg games on steam.')
+parser.add_argument('config_file_path', type=str, help='path to configuration file')
+args = parser.parse_args()
+
+
+if not args.config_file_path:
+    print("Error: You must provide the path to the configuration file.")
+    exit()
+
+
+with open(args.config_file_path, 'r') as f:
+    config = json.load(f)
 
 GAMES_PER_LOOP = 12
 
-num_of_games_to_retrieve = 50
-
 
 rpg_catalogue = SteamGameCatalog()
-
-
-url = f"https://store.steampowered.com/category/rpg/?flavor=contenthub_topsellers"
 
 
 def selenium_request(url: str) -> list:
@@ -55,7 +69,7 @@ def selenium_request(url: str) -> list:
 
 
 def get_games(url: str, num_of_games: int):
-    num_of_loops = num_of_games // GAMES_PER_LOOP + (1 if num_of_games_to_retrieve % GAMES_PER_LOOP > 0 else 0)
+    num_of_loops = num_of_games // GAMES_PER_LOOP + (1 if num_of_games % GAMES_PER_LOOP > 0 else 0)
     link_extension = ''
     games_retrieved = 0
     for loop_num in tqdm(range(1, num_of_loops + 1), desc=f'Retrievng info for {num_of_games} games'):
@@ -79,11 +93,18 @@ def get_games(url: str, num_of_games: int):
             games_retrieved += 1
             if games_retrieved == num_of_games:
                 break
-
+    logger.info("Success")
     print(rpg_catalogue)
 
 
-get_games(url, num_of_games_to_retrieve)
+def main():
+    get_games(config['url'], config['num_of_games_to_retrieve'])
+
+
+if __name__ == '__main__':
+    main()
+
+
 
 
 
