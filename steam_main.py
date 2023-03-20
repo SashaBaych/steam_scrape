@@ -13,7 +13,10 @@ from tqdm import tqdm
 import argparse
 import json
 
+# number of games displayed at once in a chart at the steam genre webpage
+GAMES_PER_LOOP = 12
 
+# logger setup
 timestamp = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M")
 log_file_name = f"steam_scrape_{timestamp}.log"
 logger = logging.getLogger(__name__)
@@ -25,79 +28,116 @@ fh.setFormatter(formatter)
 logger.addHandler(fh)
 
 
-parser = argparse.ArgumentParser(
-    description='Retrieve detailed info on the given number of top selling rpg games on steam.')
-parser.add_argument('config_file_path', type=str, help='path to configuration file')
-args = parser.parse_args()
+def parse_args():
+    try:
+        logger.info("Parsing command line arguments...")
+        parser = argparse.ArgumentParser(
+            description='Retrieve detailed info on the given number of top selling rpg games on steam.')
+        parser.add_argument('config_file_path', type=str, help='path to configuration file')
+        args = parser.parse_args()
+        logger.info("Command line arguments parsed successfully.")
+        return args
+    except Exception as e:
+        logger.error(f"Error while parsing command line arguments: {e}")
+        logger.info("Terminating program gracefully.")
+        exit()
 
 
-if not args.config_file_path:
-    print("Error: You must provide the path to the configuration file.")
-    exit()
-
-
-with open(args.config_file_path, 'r') as f:
-    config = json.load(f)
-
-GAMES_PER_LOOP = 12
-
-
-rpg_catalogue = SteamGameCatalog()
+def load_config(config_file_path):
+    try:
+        logger.info(f"Loading configuration from {config_file_path}...")
+        with open(config_file_path, 'r') as f:
+            config = json.load(f)
+        logger.info("Configuration loaded successfully.")
+        return config
+    except Exception as e:
+        logger.error(f"Error while loading configuration: {e}")
+        logger.info("Terminating program gracefully.")
+        exit()
 
 
 def selenium_request(url: str) -> list:
-    ua_random = UserAgent().random
-    chrome_options = Options()
-    chrome_options.add_argument(f"user-agent={ua_random}")
-    chrome_options.add_argument("--headless")
+    try:
+        logger.info("Starting selenium_request() process...")
 
-    driver = webdriver.Chrome(options=chrome_options)
-    driver.set_window_size(1024, 3000)
-    driver.get(url)
+        ua_random = UserAgent().random
+        chrome_options = Options()
+        chrome_options.add_argument(f"user-agent={ua_random}")
+        chrome_options.add_argument("--headless")
 
-    wait = WebDriverWait(driver, 10)
+        driver = webdriver.Chrome(options=chrome_options)
+        driver.set_window_size(1024, 3000)
+        driver.get(url)
 
-    element_present = EC.presence_of_element_located((By.CLASS_NAME, "salepreviewwidgets_SaleItemBrowserRow_y9MSd"))
-    wait.until(element_present)
+        wait = WebDriverWait(driver, 10)
 
-    page_source = driver.page_source
-    driver.quit()
+        element_present = EC.presence_of_element_located((By.CLASS_NAME, "salepreviewwidgets_SaleItemBrowserRow_y9MSd"))
+        wait.until(element_present)
 
-    rpgs_soup = BeautifulSoup(page_source, 'lxml')
+        page_source = driver.page_source
+        driver.quit()
 
-    return rpgs_soup
+        rpgs_soup = BeautifulSoup(page_source, 'lxml')
+
+        logger.info("Selenium_request() process completed successfully.")
+        return rpgs_soup
+
+    except Exception as e:
+        logger.error(f"Error in selenium_request(): {e}")
+        logger.info("Terminating program gracefully.")
+        exit()
 
 
 def get_games(url: str, num_of_games: int):
-    num_of_loops = num_of_games // GAMES_PER_LOOP + (1 if num_of_games % GAMES_PER_LOOP > 0 else 0)
-    link_extension = ''
-    games_retrieved = 0
-    for loop_num in tqdm(range(1, num_of_loops + 1), desc=f'Retrievng info for {num_of_games} games'):
-        url = url + link_extension
-        rpgs_soup = selenium_request(url)
+    try:
+        logger.info("Starting get_games() process...")
 
-        outer_games_divs = rpgs_soup.find_all('div', class_="salepreviewwidgets_SaleItemBrowserRow_y9MSd")
+        rpg_catalogue = SteamGameCatalog()
+        num_of_loops = num_of_games // GAMES_PER_LOOP + (1 if num_of_games % GAMES_PER_LOOP > 0 else 0)
+        link_extension = ''
+        games_retrieved = 0
 
-        inner_game_divs = [div.find('div', class_="salepreviewwidgets_StoreSaleWidgetHalfLeft_2Va3O") for div in outer_games_divs]
-        links = [div.a['href'] for div in inner_game_divs]
+        for loop_num in tqdm(range(1, num_of_loops + 1), desc=f'Retrieving info for {num_of_games} games'):
+            url = url + link_extension
+            rpgs_soup = selenium_request(url)
 
-        img_tags = [div.find('img', class_='salepreviewwidgets_CapsuleImage_cODQh') for div in outer_games_divs]
-        names = [tag['alt'] for tag in img_tags]
+            outer_games_divs = rpgs_soup.find_all('div', class_="salepreviewwidgets_SaleItemBrowserRow_y9MSd")
 
-        link_extension = f"&offset={12 * loop_num}"
+            inner_game_divs = [div.find('div', class_="salepreviewwidgets_StoreSaleWidgetHalfLeft_2Va3O") for div in
+                               outer_games_divs]
+            links = [div.a['href'] for div in inner_game_divs]
 
-        ratings = list(range(12 * (loop_num - 1) + 1, 12 * loop_num + 1))
+            img_tags = [div.find('img', class_='salepreviewwidgets_CapsuleImage_cODQh') for div in outer_games_divs]
+            names = [tag['alt'] for tag in img_tags]
 
-        for j in range(GAMES_PER_LOOP):
-            rpg_catalogue.create_game(rank=ratings[j], name=names[j], link=links[j])
-            games_retrieved += 1
-            if games_retrieved == num_of_games:
-                break
-    logger.info("Success")
-    print(rpg_catalogue)
+            if num_of_loops > 1:
+                link_extension = f"&offset={12 * loop_num}"
+
+            ratings = list(range(12 * (loop_num - 1) + 1, 12 * loop_num + 1))
+
+            for j in range(GAMES_PER_LOOP):
+                rpg_catalogue.add_game(rank=ratings[j], name=names[j], link=links[j])
+                games_retrieved += 1
+                if games_retrieved == num_of_games:
+                    break
+
+        logger.info("get_games() process completed successfully.")
+        print(rpg_catalogue)
+
+    except Exception as e:
+        logger.error(f"Error in get_games(): {e}")
+        logger.info("Terminating program gracefully.")
+        exit()
 
 
 def main():
+    args = parse_args()
+    if not args.config_file_path:
+        print("Error: You must provide the path to the configuration file.")
+        exit()
+
+    config = load_config(args.config_file_path)
+
     get_games(config['url'], config['num_of_games_to_retrieve'])
 
 

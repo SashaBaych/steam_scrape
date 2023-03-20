@@ -1,5 +1,5 @@
 class SteamGameCatalog(dict):
-    def create_game(self, rank=None, name=None, link=None, source=None, info=None):
+    def add_game(self, rank=None, name=None, link=None, source=None, info=None):
         if name not in self:
             game = SteamGame(rank, name, link, source, info)
             self[name] = game
@@ -7,7 +7,7 @@ class SteamGameCatalog(dict):
             # Update the existing game object with new data
             self.update_game(rank, name, link, source, info)
 
-        return game
+        return self[name]
 
     def update_game(self, name, rank=None, link=None, source=None, info=None):
         if name in self:
@@ -28,7 +28,6 @@ class SteamGameCatalog(dict):
         for key, value in self.items():
             output += str(value) + "\n"
         return output
-
 
 
 class SteamGame:
