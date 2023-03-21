@@ -1,3 +1,4 @@
+import grequests
 from bs4 import BeautifulSoup
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
@@ -11,6 +12,8 @@ from steam_game_classes import SteamGame, SteamGameCatalog
 from tqdm import tqdm
 import argparse
 import json
+import steam_get_info as sgf
+
 
 # number of games displayed at once in a chart at the steam genre webpage
 GAMES_PER_LOOP = 12
@@ -28,6 +31,18 @@ logger.addHandler(fh)
 
 
 def parse_args():
+    """
+    Parse command line arguments required for the script.
+
+    The command line argument required is:
+        config_file_path: A string representing the path to the configuration file.
+
+    Returns:
+        argparse.Namespace: An object containing the parsed command line arguments.
+
+    Raises:
+        Exception: If there's an error while parsing the command line arguments.
+    """
     try:
         logger.info("Parsing command line arguments...")
         parser = argparse.ArgumentParser(
@@ -42,7 +57,19 @@ def parse_args():
         exit()
 
 
-def load_config(config_file_path):
+def load_config(config_file_path: str) -> dict:
+    """
+    Load configuration from the specified JSON file.
+
+    Args:
+        config_file_path (str): A string representing the path to the configuration file.
+
+    Returns:
+        dict: A dictionary containing the configuration data.
+
+    Raises:
+        Exception: If there's an error while loading the configuration from the file.
+    """
     try:
         logger.info(f"Loading configuration from {config_file_path}...")
         with open(config_file_path, 'r') as f:
@@ -55,7 +82,19 @@ def load_config(config_file_path):
         exit()
 
 
-def selenium_request(url: str) -> list:
+def selenium_request(url: str):
+    """
+    Send a request to the specified URL using Selenium and return the parsed HTML content.
+
+    Args:
+        url (str): A string representing the URL to be accessed.
+
+    Returns:
+        BeautifulSoup: A BeautifulSoup object containing the parsed HTML content of the requested webpage.
+
+    Raises:
+        Exception: If there's an error while sending the request or processing the webpage content.
+    """
     try:
         logger.info("Starting selenium_request() process...")
 
@@ -87,7 +126,82 @@ def selenium_request(url: str) -> list:
         exit()
 
 
+def grequests_for_game_info(urls: list) -> list:
+    """
+    Send asynchronous requests to the specified URLs using grequests and return the list of responses.
+
+    Args:
+        urls (list): A list of strings representing the URLs to be accessed.
+
+    Returns:
+        list: A list of Response objects containing the responses for the requested URLs.
+
+    Raises:
+        Exception: If there's an error while sending the requests or processing the responses.
+    """
+    try:
+        logger.info("Starting grequests_for_game_info() process...")
+
+        req_header = {'User-Agent': UserAgent().random}
+        reqs = [grequests.get(url, headers=req_header) for url in urls]
+        resp = grequests.map(reqs)
+
+        logger.info("grequests_for_game_info() process completed successfully.")
+        return resp
+
+    except Exception as e:
+        logger.error(f"Error in grequests_for_game_info(): {e}")
+        logger.info("Terminating program gracefully.")
+        exit()
+
+
+def get_game_info(urls: list) -> list:
+    """
+    Get the detailed information about the game from the given URLs using grequests
+    and process the responses with get_dict function.
+
+    Args:
+        urls (list): A list of strings representing the URLs to be accessed.
+
+    Returns:
+        list: A list of dictionaries containing the extracted information from the URLs.
+
+    Raises:
+        Exception: If there's an error while sending the requests, processing the responses, or extracting information.
+    """
+    try:
+        logger.info("Starting get_info() process...")
+
+        web_sources = grequests_for_game_info(urls)
+        info_dicts = []
+
+        for source in web_sources:
+            info_dicts.append(sgf.get_dict(source))
+
+        logger.info("get_game_info() process completed successfully.")
+        return info_dicts
+
+    except Exception as e:
+        logger.error(f"Error in get_info(): {e}")
+        logger.info("Terminating program gracefully.")
+        exit()
+
+
 def get_games(url: str, num_of_games: int):
+    """
+    Retrieve information for the specified number of games from the provided URL using Selenium and grequests.
+    This function first uses Selenium to bypass potential filters and access the main page containing the game information.
+    Then, it extracts game details by sending requests to the individual game pages using grequests.
+
+    The retrieved game information is stored in a SteamGameCatalog object and printed at the end of the process.
+
+    Args:
+        url (str): The URL of the main page containing the list of games.
+        num_of_games (int): The number of games for which to retrieve information.
+
+    Raises:
+        Exception: If there's an error while accessing the URL, processing the page source, or extracting game information.
+    """
     try:
         logger.info("Starting get_games() process...")
 
@@ -114,8 +228,10 @@ def get_games(url: str, num_of_games: int):
 
             ratings = list(range(12 * (loop_num - 1) + 1, 12 * loop_num + 1))
 
+            info = get_game_info(links)
+
             for j in range(GAMES_PER_LOOP):
-                rpg_catalogue.add_game(rank=ratings[j], name=names[j], link=links[j])
+                rpg_catalogue.add_game(rank=ratings[j], name=names[j], link=links[j], info=info[j])
                 games_retrieved += 1
                 if games_retrieved == num_of_games:
                     break
@@ -130,6 +246,8 @@ def get_games(url: str, num_of_games: int):
 
 
 def main():
+    # runs a sample steam scraper
+    # for a requested number of games of rpg genre
     args = parse_args()
     if not args.config_file_path:
         print("Error: You must provide the path to the configuration file.")
