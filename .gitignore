@@ -10,3 +10,4 @@
 /gpt_fantasy/
 /early_drafts/
 /*.log
+/__pycache__/
