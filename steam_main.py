@@ -8,11 +8,11 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 import logging
 import datetime
-from steam_game_classes import SteamGame, SteamGameCatalog
+from steam_game_classes_m1 import SteamGame, SteamGameCatalog
 from tqdm import tqdm
 import argparse
 import json
-import steam_get_info as sgf
+import steam_get_info_m1 as sgf
 
 
 # number of games displayed at once in a chart at the steam genre webpage
