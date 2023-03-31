@@ -34,8 +34,9 @@ def parse_args():
     """
     Parse command line arguments required for the script.
 
-    The command line argument required is:
+    The command line arguments required are:
         config_file_path: A string representing the path to the configuration file.
+        category: A string representing the category of games to scrape from the Steam store.
 
     Returns:
         argparse.Namespace: An object containing the parsed command line arguments.
@@ -46,8 +47,10 @@ def parse_args():
     try:
         logger.info("Parsing command line arguments...")
         parser = argparse.ArgumentParser(
-            description='Retrieve detailed info on the given number of top selling rpg games on steam.')
+            description='Retrieve detailed info on the given number of top selling games on Steam.')
         parser.add_argument('config_file_path', type=str, help='path to configuration file')
+        parser.add_argument('category', type=str, choices=['rpg', 'action', 'strategy', 'adventure', 'simulation', 'sports_racing'],
+                            help='category of games to scrape from the Steam store')
         args = parser.parse_args()
         logger.info("Command line arguments parsed successfully.")
         return args
@@ -55,6 +58,7 @@ def parse_args():
         logger.error(f"Error while parsing command line arguments: {e}")
         logger.info("Terminating program gracefully.")
         exit()
+
 
 
 def load_config(config_file_path: str) -> dict:
