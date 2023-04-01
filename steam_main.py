@@ -14,10 +14,6 @@ import json
 import steam_get_info as sgf
 from steam_parser import parse_args
 
-
-# number of games displayed at once in a chart at the steam genre webpage
-games_per_page = 12
-
 # logger setup
 timestamp = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M")
 log_file_name = f"steam_scrape_{timestamp}.log"
