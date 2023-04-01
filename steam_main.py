@@ -10,13 +10,9 @@ import logging
 import datetime
 from steam_game_classes import SteamGame, SteamGameCatalog
 from tqdm import tqdm
-import argparse
 import json
-import steam_get_info as sgf
-
-
-# number of games displayed at once in a chart at the steam genre webpage
-GAMES_PER_LOOP = 12
+import steam_get_info as sgi
+from steam_parser import parse_args
 
 # logger setup
 timestamp = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M")
@@ -28,33 +24,6 @@ fh.setLevel(logging.INFO)
 formatter = logging.Formatter('%(levelname)s - %(message)s')
 fh.setFormatter(formatter)
 logger.addHandler(fh)
-
-
-def parse_args():
-    """
-    Parse command line arguments required for the script.
-
-    The command line argument required is:
-        config_file_path: A string representing the path to the configuration file.
-
-    Returns:
-        argparse.Namespace: An object containing the parsed command line arguments.
-
-    Raises:
-        Exception: If there's an error while parsing the command line arguments.
-    """
-    try:
-        logger.info("Parsing command line arguments...")
-        parser = argparse.ArgumentParser(
-            description='Retrieve detailed info on the given number of top selling rpg games on steam.')
-        parser.add_argument('config_file_path', type=str, help='path to configuration file')
-        args = parser.parse_args()
-        logger.info("Command line arguments parsed successfully.")
-        return args
-    except Exception as e:
-        logger.error(f"Error while parsing command line arguments: {e}")
-        logger.info("Terminating program gracefully.")
-        exit()
 
 
 def load_config(config_file_path: str) -> dict:
@@ -126,68 +95,7 @@ def selenium_request(url: str):
         exit()
 
 
-def grequests_for_game_info(urls: list) -> list:
-    """
-    Send asynchronous requests to the specified URLs using grequests and return the list of responses.
-
-    Args:
-        urls (list): A list of strings representing the URLs to be accessed.
-
-    Returns:
-        list: A list of Response objects containing the responses for the requested URLs.
-
-    Raises:
-        Exception: If there's an error while sending the requests or processing the responses.
-    """
-    try:
-        logger.info("Starting grequests_for_game_info() process...")
-
-        req_header = {'User-Agent': UserAgent().random}
-        reqs = [grequests.get(url, headers=req_header) for url in urls]
-        resp = grequests.map(reqs)
-
-        logger.info("grequests_for_game_info() process completed successfully.")
-        return resp
-
-    except Exception as e:
-        logger.error(f"Error in grequests_for_game_info(): {e}")
-        logger.info("Terminating program gracefully.")
-        exit()
-
-
-def get_game_info(urls: list) -> list:
-    """
-    Get the detailed information about the game from the given URLs using grequests
-    and process the responses with get_dict function.
-
-    Args:
-        urls (list): A list of strings representing the URLs to be accessed.
-
-    Returns:
-        list: A list of dictionaries containing the extracted information from the URLs.
-
-    Raises:
-        Exception: If there's an error while sending the requests, processing the responses, or extracting information.
-    """
-    try:
-        logger.info("Starting get_info() process...")
-
-        web_sources = grequests_for_game_info(urls)
-        info_dicts = []
-
-        for source in web_sources:
-            info_dicts.append(sgf.get_dict(source))
-
-        logger.info("get_game_info() process completed successfully.")
-        return info_dicts
-
-    except Exception as e:
-        logger.error(f"Error in get_info(): {e}")
-        logger.info("Terminating program gracefully.")
-        exit()
-
-
-def get_games(url: str, num_of_games: int):
+def get_games(url: str, num_of_games: int, games_per_loop: int, category: str):
     """
     Retrieve information for the specified number of games from the provided URL using Selenium and grequests.
     This function first uses Selenium to bypass potential filters and access the main page containing the game information.
@@ -205,8 +113,8 @@ def get_games(url: str, num_of_games: int):
     try:
         logger.info("Starting get_games() process...")
 
-        rpg_catalogue = SteamGameCatalog()
-        num_of_loops = num_of_games // GAMES_PER_LOOP + (1 if num_of_games % GAMES_PER_LOOP > 0 else 0)
+        rpg_catalogue = SteamGameCatalog(category)
+        num_of_loops = num_of_games // games_per_loop + (1 if num_of_games % games_per_loop > 0 else 0)
         link_extension = ''
         games_retrieved = 0
 
@@ -224,13 +132,13 @@ def get_games(url: str, num_of_games: int):
             names = [tag['alt'] for tag in img_tags]
 
             if num_of_loops > 1:
-                link_extension = f"&offset={12 * loop_num}"
+                link_extension = f"&offset={games_per_loop * loop_num}"
 
-            ratings = list(range(12 * (loop_num - 1) + 1, 12 * loop_num + 1))
+            ratings = list(range(games_per_loop * (loop_num - 1) + 1, games_per_loop * loop_num + 1))
 
-            info = get_game_info(links)
+            info = sgi.get_game_dicts(links)
 
-            for j in range(GAMES_PER_LOOP):
+            for j in range(games_per_loop):
                 rpg_catalogue.add_game(rank=ratings[j], name=names[j], link=links[j], info=info[j])
                 games_retrieved += 1
                 if games_retrieved == num_of_games:
@@ -249,13 +157,10 @@ def main():
     # runs a sample steam scraper
     # for a requested number of games of rpg genre
     args = parse_args()
-    if not args.config_file_path:
-        print("Error: You must provide the path to the configuration file.")
-        exit()
 
     config = load_config(args.config_file_path)
 
-    get_games(config['url'], config['num_of_games_to_retrieve'])
+    get_games(config['urls'][args.category], args.num_games, config['GAMES_PER_PAGE'], category=args.category)
 
 
 if __name__ == '__main__':
