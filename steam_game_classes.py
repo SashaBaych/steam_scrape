@@ -2,6 +2,10 @@ class SteamGameCatalog(dict):
     """
     A custom dictionary subclass to store and manage a collection of SteamGame objects.
     """
+
+    def __init__(self, category):
+        self.category = category
+
     def add_game(self, rank=None, name=None, link=None, source=None, info=None):
         """
         Adds a new SteamGame object to the catalog or updates an existing one with new data.
@@ -17,15 +21,15 @@ class SteamGameCatalog(dict):
             SteamGame: The created or updated SteamGame object.
         """
         if name not in self:
-            game = SteamGame(rank, name, link, source, info)
+            game = SteamGame(rank, name, self.category, link, source, info)
             self[name] = game
         else:
             # Update the existing game object with new data
-            self.update_game(rank, name, link, source, info)
+            self.update_game(rank, name, self.category, link, source, info)
 
         return self[name]
 
-    def update_game(self, name, rank=None, link=None, source=None, info=None):
+    def update_game(self, name, rank=None, category=None, link=None, source=None, info=None):
         """
         Updates an existing SteamGame object with new data.
 
@@ -39,6 +43,7 @@ class SteamGameCatalog(dict):
         if name in self:
             game = self[name]
             game.rank = rank
+            game.category = category
             game.link = link
             game.web_source = source
             game.info = info
@@ -75,7 +80,7 @@ class SteamGame:
     """
     A class to store and manage information about a Steam game.
     """
-    def __init__(self, rank=None, name=None, link=None, source=None, info=None):
+    def __init__(self, rank=None, name=None, category=None, link=None, source=None, info=None):
         """
         Initializes a SteamGame object with the provided data.
 
@@ -88,12 +93,13 @@ class SteamGame:
         """
         self.rank = rank
         self.name = name
+        self.category = category
         self.link = link
         self.web_source = source
         self.info = info
 
     def __str__(self):
-        output = f"rank: {self.rank}\nname: {self.name}"
+        output = f"rank: {self.rank}\nname: {self.name}\ncategory: {self.category}"
         if self.info:
             for key, value in self.info.items():
                 if key != 'name':

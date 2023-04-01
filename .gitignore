@@ -6,8 +6,8 @@
 /selenium_drafts/selenium_works_12_3_logging.py
 /steam_get_info_adar.py
 /steam_get_info_test.py
-/.DS_Store
 /gpt_fantasy/
 /early_drafts/
 /*.log
 /__pycache__/
+.DS_Store

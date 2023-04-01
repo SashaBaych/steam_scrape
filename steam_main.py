@@ -160,7 +160,7 @@ def get_game_info(urls: list) -> list:
         exit()
 
 
-def get_games(url: str, num_of_games: int, games_per_loop: int):
+def get_games(url: str, num_of_games: int, games_per_loop: int, category: str):
     """
     Retrieve information for the specified number of games from the provided URL using Selenium and grequests.
     This function first uses Selenium to bypass potential filters and access the main page containing the game information.
@@ -178,7 +178,7 @@ def get_games(url: str, num_of_games: int, games_per_loop: int):
     try:
         logger.info("Starting get_games() process...")
 
-        rpg_catalogue = SteamGameCatalog()
+        rpg_catalogue = SteamGameCatalog(category)
         num_of_loops = num_of_games // games_per_loop + (1 if num_of_games % games_per_loop > 0 else 0)
         link_extension = ''
         games_retrieved = 0
@@ -224,8 +224,8 @@ def main():
     args = parse_args()
 
     config = load_config(args.config_file_path)
-    
-    get_games(config['urls'][args.category], args.num_games, config['GAMES_PER_PAGE'])
+
+    get_games(config['urls'][args.category], args.num_games, config['GAMES_PER_PAGE'], category=args.category)
 
 
 if __name__ == '__main__':
