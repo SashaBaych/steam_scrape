@@ -11,7 +11,7 @@ import datetime
 from steam_game_classes import SteamGame, SteamGameCatalog
 from tqdm import tqdm
 import json
-import steam_get_info as sgf
+import steam_get_info as sgi
 from steam_parser import parse_args
 
 # logger setup
@@ -95,67 +95,6 @@ def selenium_request(url: str):
         exit()
 
 
-def grequests_for_game_info(urls: list) -> list:
-    """
-    Send asynchronous requests to the specified URLs using grequests and return the list of responses.
-
-    Args:
-        urls (list): A list of strings representing the URLs to be accessed.
-
-    Returns:
-        list: A list of Response objects containing the responses for the requested URLs.
-
-    Raises:
-        Exception: If there's an error while sending the requests or processing the responses.
-    """
-    try:
-        logger.info("Starting grequests_for_game_info() process...")
-
-        req_header = {'User-Agent': UserAgent().random}
-        reqs = [grequests.get(url, headers=req_header) for url in urls]
-        resp = grequests.map(reqs)
-
-        logger.info("grequests_for_game_info() process completed successfully.")
-        return resp
-
-    except Exception as e:
-        logger.error(f"Error in grequests_for_game_info(): {e}")
-        logger.info("Terminating program gracefully.")
-        exit()
-
-
-def get_game_info(urls: list) -> list:
-    """
-    Get the detailed information about the game from the given URLs using grequests
-    and process the responses with get_dict function.
-
-    Args:
-        urls (list): A list of strings representing the URLs to be accessed.
-
-    Returns:
-        list: A list of dictionaries containing the extracted information from the URLs.
-
-    Raises:
-        Exception: If there's an error while sending the requests, processing the responses, or extracting information.
-    """
-    try:
-        logger.info("Starting get_info() process...")
-
-        web_sources = grequests_for_game_info(urls)
-        info_dicts = []
-
-        for source in web_sources:
-            info_dicts.append(sgf.get_dict(source))
-
-        logger.info("get_game_info() process completed successfully.")
-        return info_dicts
-
-    except Exception as e:
-        logger.error(f"Error in get_info(): {e}")
-        logger.info("Terminating program gracefully.")
-        exit()
-
-
 def get_games(url: str, num_of_games: int, games_per_loop: int, category: str):
     """
     Retrieve information for the specified number of games from the provided URL using Selenium and grequests.
@@ -197,9 +136,9 @@ def get_games(url: str, num_of_games: int, games_per_loop: int, category: str):
 
             ratings = list(range(games_per_loop * (loop_num - 1) + 1, games_per_loop * loop_num + 1))
 
-            info = get_game_info(links)
+            info = sgi.get_game_dicts(links)
 
-            for j in range(games_per_page):
+            for j in range(games_per_loop):
                 rpg_catalogue.add_game(rank=ratings[j], name=names[j], link=links[j], info=info[j])
                 games_retrieved += 1
                 if games_retrieved == num_of_games:

@@ -31,7 +31,7 @@ def validate_num_games(num_games):
 def parse_args():
     logger.info("Parsing command line arguments...")
     parser = argparse.ArgumentParser(description='Retrieve detailed info on the given number '
-                                                 'of top selling games on steam.')
+                                                 'of top selling games on steam in a particular category.')
 
     while True:
         try:
@@ -44,8 +44,8 @@ def parse_args():
     while True:
         try:
             category = input("Enter the game category to scrape. "
-                             "\nPlease choose from: "
-                             "'rpg', 'action', 'strategy', 'adventure', 'simulation', 'sports_racing'. ")
+                             "\nPlease choose from "
+                             "'rpg', 'action', 'strategy', 'adventure', 'simulation', 'sports_racing': ")
             category = validate_category(category)
             break
         except ValueError as e:
