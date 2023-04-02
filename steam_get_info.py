@@ -2,7 +2,7 @@ import grequests
 from fake_useragent import UserAgent
 from bs4 import BeautifulSoup
 import logging
-from steam_age_bypass import sel_age_bypass
+from steam_age_bypass import selenium_age_bypass
 
 
 def grequests_for_game_info(urls: list) -> list:
@@ -62,7 +62,7 @@ def get_game_dicts(urls):
                 name = (soup.find("div", class_="apphub_AppName")).text
             except Exception:
                 if not retried:
-                    game_soup = sel_age_bypass(urls[i])
+                    game_soup = selenium_age_bypass(urls[i])
                     if game_soup:
                         soup = game_soup
                         retried = True

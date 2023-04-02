@@ -5,7 +5,7 @@
 /selenium_drafts/selenium_works_12_2.py
 /selenium_drafts/selenium_works_12_3_logging.py
 /steam_get_info_adar.py
-/steam_get_info_test.py
+/tests/steam_get_info_test_1.py
 /gpt_fantasy/
 /early_drafts/
 /*.log
@@ -13,3 +13,5 @@
 .DS_Store
 steam_main_copy.py
 steam_main_12.py
+/tests/
+
