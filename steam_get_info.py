@@ -2,6 +2,7 @@ import grequests
 from fake_useragent import UserAgent
 from bs4 import BeautifulSoup
 import logging
+from steam_age_bypass import sel_age_bypass
 
 
 def grequests_for_game_info(urls: list) -> list:
@@ -32,6 +33,7 @@ def grequests_for_game_info(urls: list) -> list:
         logging.info("Terminating program gracefully.")
         exit()
 
+
 def get_game_dicts(urls):
     """
     Extracts game information from a BeautifulSoup response and returns it as a dictionary.
@@ -50,21 +52,49 @@ def get_game_dicts(urls):
 
     responses = grequests_for_game_info(urls)
     dicts_list = []
-    for response in responses:
+    for i, response in enumerate(responses):
         game_dict = {}
         soup = BeautifulSoup(response.text, "html.parser")
+        retried = False
 
-        try:
-            name = (soup.find("div", class_="apphub_AppName")).text
-        except Exception:
-            name = 'not_available'
-        game_dict['name'] = name
+        while True:
+            try:
+                name = (soup.find("div", class_="apphub_AppName")).text
+            except Exception:
+                if not retried:
+                    game_soup = sel_age_bypass(urls[i])
+                    if game_soup:
+                        soup = game_soup
+                        retried = True
+                        continue
+                    else:
+                        game_dict['error_message'] = 'not available in your country or region'
+                        dicts_list.append(game_dict)
+                        break
+                else:
+                    name = 'not_available'
+            game_dict['name'] = name
+            break
 
         try:
             release = soup.find_all("div", class_="date")[0].text
         except Exception:
             release = 'not_available'
         game_dict['release_date'] = release
+
+        try:
+            developer_div = soup.find('div', {'id': 'developers_list'})
+            developer = developer_div.a.text
+        except Exception:
+            developer = 'not_available'
+        game_dict['developer'] = developer
+
+        # try:
+        #     publisher_div = soup.find('div', {'id': 'developers_list'})
+        #     publisher = publisher_div.a.text
+        # except Exception:
+        #     release = 'not_available'
+        # game_dict['developer']  = publisher
 
         try:
             price_meta_tag = soup.find("meta", {"itemprop": "price"})
