@@ -136,10 +136,10 @@ def get_games(url: str, num_of_games: int, games_per_loop: int, category: str):
 
             ratings = list(range(games_per_loop * (loop_num - 1) + 1, games_per_loop * loop_num + 1))
 
-            info = sgi.get_game_dicts(links)
+            infos = sgi.get_game_dicts(links)
 
             for j in range(games_per_loop):
-                rpg_catalogue.add_game(rank=ratings[j], name=names[j], link=links[j], info=info[j])
+                rpg_catalogue.add_game(rank=ratings[j], name=names[j], link=links[j], info=infos[j])
                 games_retrieved += 1
                 if games_retrieved == num_of_games:
                     break
