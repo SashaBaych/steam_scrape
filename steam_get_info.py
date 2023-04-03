@@ -3,7 +3,8 @@ from fake_useragent import UserAgent
 from bs4 import BeautifulSoup
 import logging
 from steam_age_bypass import selenium_age_bypass
-import time
+import datetime
+
 
 def grequests_for_game_info(urls: list) -> list:
     """
@@ -72,21 +73,22 @@ def get_game_dicts(urls):
                         dicts_list.append(game_dict)
                         break
                 else:
-                    name = 'not_available'
+                    name = None
             game_dict['name'] = name
             break
 
         try:
             release = soup.find_all("div", class_="date")[0].text
+            release_date_object = datetime.datetime.strptime(release, '%d %b, %Y').date()
         except Exception:
-            release = 'not_available'
-        game_dict['release_date'] = release
+            release_date_object = None
+        game_dict['release_date'] = release_date_object
 
         try:
             developer_div = soup.find('div', {'id': 'developers_list'})
             developer = developer_div.a.text
         except Exception:
-            developer = 'not_available'
+            developer = None
         game_dict['developer'] = developer
 
         try:
@@ -98,7 +100,7 @@ def get_game_dicts(urls):
             if publisher_dev_row:
                 publisher = publisher_dev_row.a.get_text()
         except Exception:
-            publisher = 'not_available'
+            publisher = None
         game_dict['publisher'] = publisher
 
         try:
@@ -107,8 +109,8 @@ def get_game_dicts(urls):
             currency_meta_tag = soup.find("meta", {"itemprop": "priceCurrency"})
             currency = currency_meta_tag['content']
         except Exception:
-            price = 'not_available'
-            currency = 'not_available'
+            price = None
+            currency = None
         game_dict['price'] = price
         game_dict['price_currency'] = currency
 
@@ -116,23 +118,23 @@ def get_game_dicts(urls):
             span_tag = soup.find('span', {'data-panel': True})
             genres = [a_tag.text for a_tag in span_tag.find_all('a')]
         except Exception:
-            genres = 'not_available'
+            genres = None
         game_dict['genres'] = genres
 
         try:
             review_summary = (soup.select_one('span[class^="game_review_summary"]')).text
         except Exception:
-            review_summary = 'not_available'
+            review_summary = None
         game_dict['review_summary'] = review_summary
 
         try:
             score_div = soup.find('div', class_='score high')
             score = int(score_div.text.strip())
         except Exception:
-            score = 'not_available'
+            score = None
         game_dict['metacritic_score'] = score
 
-        game_dict['sample_date'] = time.strftime('%Y-%m-%d')
+        game_dict['sample_date'] = datetime.date.today()
 
         dicts_list.append(game_dict)
 

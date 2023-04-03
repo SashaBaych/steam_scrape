@@ -3,7 +3,8 @@
 # from sqlalchemy.orm import relationship
 # from sqlalchemy.orm import sessionmaker
 from steam_sql import *
-
+from steam_utils import get_logger, logger_decorator
+@logger_decorator
 def populate_developer(session, developer_name):
     developer = session.query(Developer).filter_by(name=developer_name).first()
     if not developer:
@@ -12,7 +13,7 @@ def populate_developer(session, developer_name):
         session.commit()
     return developer
 
-
+@logger_decorator
 def populate_publisher(session, publisher_name):
     publisher = session.query(Publisher).filter_by(name=publisher_name).first()
     if not publisher:
@@ -21,7 +22,7 @@ def populate_publisher(session, publisher_name):
         session.commit()
     return publisher
 
-
+@logger_decorator
 def populate_review_summary(session, review_summary_desc):
     review_summary = session.query(ReviewSummary).filter_by(summary=review_summary_desc).first()
     if not review_summary:
@@ -30,7 +31,7 @@ def populate_review_summary(session, review_summary_desc):
         session.commit()
     return review_summary
 
-
+@logger_decorator
 def populate_genre(session, genre_name):
     genre = session.query(Genre).filter_by(name=genre_name).first()
     if not genre:
@@ -39,7 +40,7 @@ def populate_genre(session, genre_name):
         session.commit()
     return genre
 
-
+@logger_decorator
 def populate_game(session, game):
     developer = populate_developer(session, game.info['developer'])
     publisher = populate_publisher(session, game.info['publisher'])
@@ -72,7 +73,7 @@ def populate_game(session, game):
 
     return game_entry
 
-
+@logger_decorator
 def populate_price_history(session, game_entry, price, currency, rank_date):
     price_history = PriceHistory(
         game_id=game_entry.game_id,
@@ -83,7 +84,7 @@ def populate_price_history(session, game_entry, price, currency, rank_date):
     session.add(price_history)
     session.commit()
 
-
+@logger_decorator
 def populate_top_selling_history(session, game_entry, rank, rank_date):
     top_selling_history = TopSellingHistory(
         game_id=game_entry.game_id,
@@ -93,7 +94,7 @@ def populate_top_selling_history(session, game_entry, rank, rank_date):
     session.add(top_selling_history)
     session.commit()
 
-
+@logger_decorator
 def populate_database(catalog, db_url):
     engine = create_engine(db_url, echo=True)
     Base.metadata.create_all(engine)
@@ -107,5 +108,5 @@ def populate_database(catalog, db_url):
                                game.info['price_currency'], game.info['sample_date'])
         populate_top_selling_history(session, game_entry, game.rank, game.info['sample_date'])
         session.commit()
-
+    print('It actually worked')
     session.close()

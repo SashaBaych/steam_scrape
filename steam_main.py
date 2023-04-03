@@ -13,17 +13,21 @@ from tqdm import tqdm
 import json
 import steam_get_info as sgi
 from steam_parser import parse_args
+from steam_populate_database import populate_database
+from steam_utils import get_logger
 
-# logger setup
-timestamp = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M")
-log_file_name = f"steam_scrape_{timestamp}.log"
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
-fh = logging.FileHandler(log_file_name)
-fh.setLevel(logging.INFO)
-formatter = logging.Formatter('%(levelname)s - %(message)s')
-fh.setFormatter(formatter)
-logger.addHandler(fh)
+logger = get_logger(__file__)
+
+# # logger setup
+# timestamp = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M")
+# log_file_name = f"steam_scrape_{timestamp}.log"
+# logger = logging.getLogger(__name__)
+# logger.setLevel(logging.INFO)
+# fh = logging.FileHandler(log_file_name)
+# fh.setLevel(logging.INFO)
+# formatter = logging.Formatter('%(levelname)s - %(message)s')
+# fh.setFormatter(formatter)
+# logger.addHandler(fh)
 
 
 def load_config(config_file_path: str) -> dict:
@@ -113,7 +117,7 @@ def get_games(url: str, num_of_games: int, games_per_loop: int, category: str):
     try:
         logger.info("Starting get_games() process...")
 
-        rpg_catalogue = SteamGameCatalog(category)
+        game_catalogue = SteamGameCatalog(category)
         num_of_loops = num_of_games // games_per_loop + (1 if num_of_games % games_per_loop > 0 else 0)
         link_extension = ''
         games_retrieved = 0
@@ -139,13 +143,14 @@ def get_games(url: str, num_of_games: int, games_per_loop: int, category: str):
             infos = sgi.get_game_dicts(links)
 
             for j in range(games_per_loop):
-                rpg_catalogue.add_game(rank=ratings[j], name=names[j], link=links[j], info=infos[j])
+                game_catalogue.add_game(rank=ratings[j], name=names[j], link=links[j], info=infos[j])
                 games_retrieved += 1
                 if games_retrieved == num_of_games:
                     break
 
         logger.info("get_games() process completed successfully.")
-        print(rpg_catalogue)
+        print(game_catalogue)
+        return game_catalogue
 
     except Exception as e:
         logger.error(f"Error in get_games(): {e}")
@@ -160,7 +165,10 @@ def main():
 
     config = load_config(args.config_file_path)
 
-    get_games(config['urls'][args.category], args.num_games, config['GAMES_PER_PAGE'], category=args.category)
+    catalogue = get_games(config['urls'][args.category], args.num_games,
+                          config['GAMES_PER_PAGE'], category=args.category)
+
+    populate_database(catalogue, config['db_url'])
 
 
 if __name__ == '__main__':
