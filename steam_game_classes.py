@@ -1,6 +1,9 @@
 class SteamGameCatalog(dict):
     """
     A custom dictionary subclass to store and manage a collection of SteamGame objects.
+
+    Args:
+        category (str): Category of the games in the catalogue.
     """
 
     def __init__(self, category):
