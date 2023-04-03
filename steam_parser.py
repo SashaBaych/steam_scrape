@@ -2,7 +2,7 @@ import argparse
 import logging
 import os
 
-logger = logging.getLogger(__name__)
+# logger = logging.getLogger(__name__)
 
 
 def validate_config_file_path(config_file_path):
@@ -29,7 +29,7 @@ def validate_num_games(num_games):
 
 
 def parse_args():
-    logger.info("Parsing command line arguments...")
+    # logger.info("Parsing command line arguments...")
     parser = argparse.ArgumentParser(description='Retrieve detailed info on the given number '
                                                  'of top selling games on steam in a particular category.')
 
@@ -67,5 +67,5 @@ def parse_args():
     parser.add_argument('--num_games', type=int, help='Number of games to scrape', default=num_games)
 
     args = parser.parse_args()
-    logger.info("Command line arguments parsed successfully.")
+    # logger.info("Command line arguments parsed successfully.")
     return args

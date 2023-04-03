@@ -3,7 +3,7 @@ from fake_useragent import UserAgent
 from bs4 import BeautifulSoup
 import logging
 from steam_age_bypass import selenium_age_bypass
-
+import time
 
 def grequests_for_game_info(urls: list) -> list:
     """
@@ -89,12 +89,17 @@ def get_game_dicts(urls):
             developer = 'not_available'
         game_dict['developer'] = developer
 
-        # try:
-        #     publisher_div = soup.find('div', {'id': 'developers_list'})
-        #     publisher = publisher_div.a.text
-        # except Exception:
-        #     release = 'not_available'
-        # game_dict['developer']  = publisher
+        try:
+            publisher_dev_row = None
+            for dev_row in soup.find_all(class_='dev_row'):
+                if 'Publisher:' in dev_row.text:
+                    publisher_dev_row = dev_row
+                    break
+            if publisher_dev_row:
+                publisher = publisher_dev_row.a.get_text()
+        except Exception:
+            publisher = 'not_available'
+        game_dict['publisher'] = publisher
 
         try:
             price_meta_tag = soup.find("meta", {"itemprop": "price"})
@@ -126,6 +131,8 @@ def get_game_dicts(urls):
         except Exception:
             score = 'not_available'
         game_dict['metacritic_score'] = score
+
+        game_dict['sample_date'] = time.strftime('%Y-%m-%d')
 
         dicts_list.append(game_dict)
 

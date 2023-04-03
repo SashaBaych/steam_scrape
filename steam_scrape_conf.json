@@ -7,5 +7,7 @@
         "simulation": "https://store.steampowered.com/category/simulation/?flavor=contenthub_topsellers",
         "sports_racing": "https://store.steampowered.com/category/sports_and_racing/?flavor=contenthub_topsellers"
     },
-    "GAMES_PER_PAGE": 12
+    "GAMES_PER_PAGE": 12,
+
+    "db_url": "sqlite:///steamgames.db"
 }
