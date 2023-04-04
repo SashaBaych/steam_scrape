@@ -149,8 +149,10 @@ def get_games(url: str, num_of_games: int, games_per_loop: int, category: str):
 
 
 def main():
-    # runs a sample steam scraper
-    # for a requested number of games of rpg genre
+    """
+    Runs a simple steam scraper for a given category and number of games
+    and adds results to the database on demand.
+    """
     args = parse_args()
 
     config = load_config(args.config_file_path)
@@ -158,9 +160,10 @@ def main():
     catalogue = get_games(config['urls'][args.category], args.num_games,
                           config['GAMES_PER_PAGE'], category=args.category)
 
-    deploy_db(config['db_conf'], config['alch_conf']['database'])
+    if args.use_database is True:
+        deploy_db(config['db_conf'], config['alch_conf']['database'])
 
-    populate_database(catalogue, config['alch_conf'])
+        populate_database(catalogue, config['alch_conf'])
 
 
 if __name__ == '__main__':

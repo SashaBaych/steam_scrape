@@ -1,6 +1,3 @@
-# from sqlalchemy import create_engine, Column, Integer, String, Date, ForeignKey, Float, Table
-# from sqlalchemy.ext.declarative import declarative_base
-# from sqlalchemy.orm import relationship
 from sqlalchemy.orm import sessionmaker
 from steam_sql_tables import *
 from steam_utils import get_logger, logger_decorator

@@ -8,7 +8,7 @@ LOG_FILE_NAME = f"st_log_{TIMESTAMP}.log"
 
 def get_logger(file):
     logging.basicConfig(format='%(name)s; %(levelname)s; %(message)s',
-                        level=logging.ERROR,
+                        level=logging.INFO,
                         handlers=[
                             logging.FileHandler(LOG_FILE_NAME),
                             logging.StreamHandler()
