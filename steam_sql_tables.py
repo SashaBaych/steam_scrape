@@ -2,8 +2,28 @@ from sqlalchemy import create_engine, Column, Integer, String, Date, ForeignKey,
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 import mysql.connector
+from steam_utils import logger_decorator, get_logger
 
+logger = get_logger(__file__)
+
+
+@logger_decorator
 def deploy_db(config_dict, db_name):
+    """
+    Creates a new MySQL database with the given name if it does not exist, using the provided configuration parameters.
+
+    Parameters:
+        config_dict (dict): A dictionary containing the configuration parameters for the MySQL connection.
+        The dictionary must contain the keys 'host', 'user', and 'password', and optionally 'port' and 'ssl_mode'.
+        db_name (str): The name of the database to be created or checked.
+
+    Raises:
+        mysql.connector.Error: If there is an error creating the database or connecting to the MySQL server.
+        TypeError: If the configuration dictionary is not provided or is not a dictionary.
+
+    Returns:
+        None: This function does not return anything.
+    """
     cnx = mysql.connector.connect(**config_dict)
     cursor = cnx.cursor()
     create_database_query = f"CREATE DATABASE IF NOT EXISTS {db_name}"
@@ -14,7 +34,7 @@ def deploy_db(config_dict, db_name):
 
 Base = declarative_base()
 
-
+# For more details on the database tables please read the included README.md
 class Developer(Base):
     __tablename__ = 'developer'
     developer_id = Column(Integer, primary_key=True)

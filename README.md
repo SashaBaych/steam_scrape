@@ -12,7 +12,7 @@ More detail may be added if necessary. This would allow researchers to look for 
 
 ## Major difficulties of the project:
 
-One of the major difficulties of the project was that Steam's pages are dynamic, which required the use of Selenium to "wait" for certain items to fully load on a page and further browser automation. For example some games are hidden behind age and gegraphic restrictions which needed to be bypassed using selenium.
+One of the major difficulties of the project was that Steam's pages are dynamic, which required the use of Selenium to "wait" for certain items to fully load on a page and further browser automation. For example some games are hidden behind age and geographic restrictions which needed to be bypassed using selenium. This noticeably slows the scraper down.
 
 
 ## How it Works

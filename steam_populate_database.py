@@ -2,6 +2,8 @@ from sqlalchemy.orm import sessionmaker
 from steam_sql_tables import *
 from steam_utils import get_logger, logger_decorator
 
+# See below the list of tables that populate corresponding tables in the database.
+
 @logger_decorator
 def populate_developer(session, developer_name):
     developer = session.query(Developer).filter_by(name=developer_name).first()
