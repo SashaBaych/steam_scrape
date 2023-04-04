@@ -7,7 +7,6 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 import logging
-import datetime
 from steam_game_classes import SteamGame, SteamGameCatalog
 from tqdm import tqdm
 import json
@@ -16,18 +15,8 @@ from steam_parser import parse_args
 from steam_populate_database import populate_database
 from steam_utils import get_logger
 
-logger = get_logger(__file__)
 
-# # logger setup
-# timestamp = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M")
-# log_file_name = f"steam_scrape_{timestamp}.log"
-# logger = logging.getLogger(__name__)
-# logger.setLevel(logging.INFO)
-# fh = logging.FileHandler(log_file_name)
-# fh.setLevel(logging.INFO)
-# formatter = logging.Formatter('%(levelname)s - %(message)s')
-# fh.setFormatter(formatter)
-# logger.addHandler(fh)
+logger = get_logger(__file__)
 
 
 def load_config(config_file_path: str) -> dict:
