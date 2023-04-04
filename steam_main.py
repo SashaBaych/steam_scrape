@@ -12,6 +12,7 @@ from tqdm import tqdm
 import json
 import steam_get_info as sgi
 from steam_parser import parse_args
+from steam_sql_tables import deploy_db
 from steam_populate_database import populate_database
 from steam_utils import get_logger
 
@@ -69,7 +70,7 @@ def selenium_request(url: str):
         driver.set_window_size(1024, 3000)
         driver.get(url)
 
-        wait = WebDriverWait(driver, 10)
+        wait = WebDriverWait(driver, 3)
 
         element_present = EC.presence_of_element_located((By.CLASS_NAME, "salepreviewwidgets_SaleItemBrowserRow_y9MSd"))
         wait.until(element_present)
@@ -157,7 +158,9 @@ def main():
     catalogue = get_games(config['urls'][args.category], args.num_games,
                           config['GAMES_PER_PAGE'], category=args.category)
 
-    populate_database(catalogue, config['db_url'])
+    deploy_db(config['db_conf'], config['alch_conf']['database'])
+
+    populate_database(catalogue, config['alch_conf'])
 
 
 if __name__ == '__main__':

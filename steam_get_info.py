@@ -58,6 +58,8 @@ def get_game_dicts(urls):
         soup = BeautifulSoup(response.text, "html.parser")
         retried = False
 
+        name = None
+
         while True:
             try:
                 name = (soup.find("div", class_="apphub_AppName")).text
@@ -70,12 +72,10 @@ def get_game_dicts(urls):
                         continue
                     else:
                         game_dict['error_message'] = 'not available in your country or region'
-                        dicts_list.append(game_dict)
-                        break
-                else:
-                    name = None
-            game_dict['name'] = name
-            break
+                break
+            else:
+                break
+        game_dict['name'] = name
 
         try:
             release = soup.find_all("div", class_="date")[0].text

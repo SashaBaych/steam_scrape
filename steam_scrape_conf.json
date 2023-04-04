@@ -9,5 +9,19 @@
     },
     "GAMES_PER_PAGE": 12,
 
-    "db_url": "sqlite:///steamgames.db"
+    "db_url": "sqlite:///steamgames.db",
+
+    "db_conf": {
+        "user": "root",
+        "password": "Hop357mOp705",
+        "host": "127.0.0.1"
+    },
+
+    "alch_conf": {
+        "user": "root",
+        "password": "Hop357mOp705",
+        "host": "127.0.0.1",
+        "database": "steamgames"
+    }
+
 }

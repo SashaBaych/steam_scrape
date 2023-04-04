@@ -19,7 +19,7 @@ def selenium_age_bypass(url: str):
     driver.set_window_size(1024, 2000)
     driver.get(url)
 
-    wait = WebDriverWait(driver, 5)
+    wait = WebDriverWait(driver, 2)
 
     # check for country error
     try:
@@ -39,7 +39,7 @@ def selenium_age_bypass(url: str):
     view_page_button.click()
 
     driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-    time.sleep(5)
+    time.sleep(2)
     page_source = driver.page_source
 
     game_soup = BeautifulSoup(page_source, 'html.parser')

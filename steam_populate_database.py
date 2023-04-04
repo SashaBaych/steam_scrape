@@ -1,9 +1,10 @@
 # from sqlalchemy import create_engine, Column, Integer, String, Date, ForeignKey, Float, Table
 # from sqlalchemy.ext.declarative import declarative_base
 # from sqlalchemy.orm import relationship
-# from sqlalchemy.orm import sessionmaker
-from steam_sql import *
+from sqlalchemy.orm import sessionmaker
+from steam_sql_tables import *
 from steam_utils import get_logger, logger_decorator
+
 @logger_decorator
 def populate_developer(session, developer_name):
     developer = session.query(Developer).filter_by(name=developer_name).first()
@@ -95,8 +96,9 @@ def populate_top_selling_history(session, game_entry, rank, rank_date):
     session.commit()
 
 @logger_decorator
-def populate_database(catalog, db_url):
-    engine = create_engine(db_url, echo=True)
+def populate_database(catalog: object, db_config: dict):
+    db_url = f"mysql+mysqlconnector://{db_config['user']}:{db_config['password']}@{db_config['host']}/{db_config['database']}"
+    engine = create_engine(db_url, echo=False)
     Base.metadata.create_all(engine)
 
     Session = sessionmaker(bind=engine)
