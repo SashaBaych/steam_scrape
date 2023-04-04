@@ -80,3 +80,5 @@ The database schema consists of the following tables:
 
 **The code to deploy and populate of the database using mysql.connector and SQLAlchemy is provided in detail in 
 the files steam_sql_tables.py and steam_populate_database.py
+
+![steamgame_database_edr.png](..%2F..%2F..%2F..%2FDesktop%2Fsteamgame_database_edr.png)
