@@ -1,7 +1,6 @@
 import grequests
 from fake_useragent import UserAgent
 from bs4 import BeautifulSoup
-import logging
 from steam_age_bypass import selenium_age_bypass
 import datetime
 from typing import Optional, List
@@ -53,7 +52,7 @@ def extract_release_date(soup: BeautifulSoup) -> Optional[datetime.date]:
     try:
         logger.info("Extracting release date...")
         release = soup.find_all("div", class_="date")[0].text
-        release_date_object = datetime.datetime.strptime(release, '%d %b, %Y').date()
+        release_date_object = datetime.datetime.strptime(release, '%b %d, %Y').date()
         logger.info("Release date extracted successfully.")
         return release_date_object
     except Exception as e:
@@ -250,7 +249,7 @@ def get_game_dicts(urls: list) -> list:
                         retried = True
                         continue
                     else:
-                        game_dict['error_message'] = 'not available in your country or region'
+                        game_dict['error_message'] = 'detailed info not available'
                 break
             else:
                 break

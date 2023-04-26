@@ -10,7 +10,7 @@ from tqdm import tqdm
 
 
 @logger_decorator
-def selenium_request_all(user_game_count: int, url: str) -> list:
+def selenium_request_all(url: str, user_game_count: int) -> list:
     ua_random = UserAgent().random
     chrome_options = Options()
     chrome_options.add_argument(f"user-agent={ua_random}")
@@ -53,9 +53,9 @@ def selenium_request_all(user_game_count: int, url: str) -> list:
 
 
 @logger_decorator
-def get_basic_game_info_all(user_game_count: int, url: str) -> list:
+def get_basic_game_info_all(url: str, user_game_count: int) -> list:
 
-    soup_results_set = selenium_request_all(user_game_count, url)
+    soup_results_set = selenium_request_all(url, user_game_count)
 
     basic_game_info = []
 
@@ -67,9 +67,9 @@ def get_basic_game_info_all(user_game_count: int, url: str) -> list:
 
     return basic_game_info
 
-
-url = 'https://store.steampowered.com/search/?filter=topsellers'
-game_info = get_basic_game_info_all(30, url)
-
-for game in game_info:
-    print(game)
+#
+# url = 'https://store.steampowered.com/search/?filter=topsellers'
+# game_info = get_basic_game_info_all(url, 30)
+#
+# for game in game_info:
+#     print(game)

@@ -85,5 +85,5 @@ def get_basic_game_info_category(url: str, user_game_count: int) -> list:
     return basic_game_info
 
 
-url = 'https://store.steampowered.com/category/action/?flavor=contenthub_topsellers'
-print(get_basic_game_info_category(url, 50))
+# url = 'https://store.steampowered.com/category/action/?flavor=contenthub_topsellers'
+# print(get_basic_game_info_category(url, 50))

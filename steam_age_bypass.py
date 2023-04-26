@@ -25,27 +25,33 @@ def selenium_age_bypass(url: str):
     try:
         country_error = ec.presence_of_element_located((By.CLASS_NAME, "error"))
         wait.until(country_error)
+        driver.quit()
         return False
     except Exception:
         pass
 
-    element_present = ec.presence_of_element_located((By.ID, 'ageYear'))
-    wait.until(element_present)
+    try:
+        element_present = ec.presence_of_element_located((By.ID, 'ageYear'))
+        wait.until(element_present)
 
-    year_select = Select(driver.find_element(By.ID, 'ageYear'))
-    year_select.select_by_value('1980')
+        year_select = Select(driver.find_element(By.ID, 'ageYear'))
+        year_select.select_by_value('1980')
 
-    view_page_button = driver.find_element(By.ID, 'view_product_page_btn')
-    view_page_button.click()
+        view_page_button = driver.find_element(By.ID, 'view_product_page_btn')
+        view_page_button.click()
 
-    driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-    time.sleep(2)
-    page_source = driver.page_source
+        driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+        time.sleep(2)
+        page_source = driver.page_source
 
-    game_soup = BeautifulSoup(page_source, 'html.parser')
-    # print(game_soup)
-    driver.quit()
-    return game_soup
+        game_soup = BeautifulSoup(page_source, 'html.parser')
+
+        driver.quit()
+        return game_soup
+    except Exception:
+        driver.quit()
+        return False
+
 
 
 
