@@ -14,5 +14,8 @@
 steam_main_copy.py
 steam_main_12.py
 /tests/
+/backup/
+/m2_steam_scraper.zip
+/m2*
 steamgames*
 
