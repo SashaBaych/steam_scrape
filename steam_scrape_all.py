@@ -11,6 +11,16 @@ from tqdm import tqdm
 
 @logger_decorator
 def selenium_request_all(url: str, user_game_count: int) -> list:
+    """
+    Retrieves the global list of top games using Selenium to load and scroll the page.
+
+    Args:
+        url (str): The URL of the page to scrape.
+        user_game_count (int): The number of games to be retrieved.
+
+    Returns:
+        list: A list of BeautifulSoup game elements.
+    """
     ua_random = UserAgent().random
     chrome_options = Options()
     chrome_options.add_argument(f"user-agent={ua_random}")
@@ -54,6 +64,16 @@ def selenium_request_all(url: str, user_game_count: int) -> list:
 
 @logger_decorator
 def get_basic_game_info_all(url: str, user_game_count: int) -> list:
+    """
+    Retrieves basic information (rank, title, and link) for the specified number of games from the given URL.
+
+    Args:
+        url (str): The URL of the page to scrape.
+        user_game_count (int): The number of games to retrieve.
+
+    Returns:
+        list: A list of dictionaries containing basic information for each game (rank, title, and link).
+    """
 
     soup_results_set = selenium_request_all(url, user_game_count)
 

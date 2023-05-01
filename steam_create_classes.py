@@ -7,7 +7,17 @@ from steam_utils import logger_decorator
 
 @logger_decorator
 def create_game_catalogue(url: str, num_of_games: int, category: str) -> SteamGameCatalog:
+    """
+    Creates a game catalogue by scraping information from the provided URL for a specific category.
 
+    Parameters:
+        url (str): The URL of the Steam page to be scraped.
+        num_of_games (int): The number of games to be included in the catalogue.
+        category (str): The category of games to be scraped ('global' or a specific category).
+
+    Returns:
+        SteamGameCatalog: A SteamGameCatalog object containing the scraped game information.
+    """
     game_catalogue = SteamGameCatalog(category)
 
     if category == 'global':

@@ -19,17 +19,34 @@ One of the major difficulties of the project was that Steam's pages are dynamic,
 
 The Steam scraper program consists of several Python scripts that work together to retrieve and store data on the top-selling games on Steam, as well as their details. Here's how it works:
 
-1. The `steam_main.py` script retrieves the list of top-selling games in each category from the Steam website, using the URLs to pages of categories provided in the `steam_scrape_conf.json` configuration file. Just run the scraper and input required scraping parameters.
-****Note: The user must manually input the required parameters for MySQL access in the configuration file.**
-2. It then retrieves the details for each game by visiting their individual game pages using Selenium and Beautiful Soup libraries. The `steam_age_bypass.py` script helps bypass Steam's age verification check, which would otherwise prevent the scraper from accessing the game pages.
+1. Run the steam_main.py script to start the scraper. The script will prompt you to input the required scraping parameters (number of games to scrape, category to scrape, and whether to store the scraped data in a database).
 
-3. The data on each game is stored as a `Game` object in memory, which is then added to a catalog of all the games retrieved during the scraping process.
+   _Note: The user must manually input the required parameters for MySQL access in the steam_scrape_conf.json configuration file._
 
-4. The `steam_parser.py` script retrieves user input on the number of games to scrape, the category to scrape, and whether to use a database to store the scraped data. It also validates the user input.
+2. The script retrieves the list of top-selling games in each category from the Steam website, using the URLs to pages of categories provided in the steam_scrape_conf.json configuration file.
 
-5. If the user chooses to use a database, the `steam_sql_tables.py` script deploys the MySQL database and defines the schema using SQLAlchemy. It also defines helper functions to populate the database with the scraped data.
+3. It then retrieves the details for each game by visiting their individual game pages using Selenium and Beautiful Soup libraries. The steam_age_bypass.py script helps bypass Steam's age verification check, which would otherwise prevent the scraper from accessing the game pages.
 
-6. Finally, the `steam_populate_database.py` script populates the database with the scraped data using the helper functions defined in the `steam_sql_tables.py` script.
+4. The data on each game is stored as a Game object in memory, which is then added to a catalog of all the games retrieved during the scraping process.
+
+5. If the user chooses to use a database, the steam_sql_tables.py script deploys the MySQL database and defines the schema using SQLAlchemy. It also defines helper functions to populate the database with the scraped data.
+
+6. Finally, the steam_populate_database.py script populates the database with the scraped data using the helper functions defined in the steam_sql_tables.py script.
+
+## How to Run the Script
+
+1. Edit the steam_scrape_conf.json configuration file with your MySQL access parameters.
+2. Run the steam_main.py script with the path to the configuration file as a mandatory argument:
+
+   `python steam_main.py --config_path path/to/steam_scrape_conf.json`
+
+3. Available parser arguments and options:
+   - `config_path`: Path to the configuration file (mandatory).
+   - `num_of_games`: Number of games to scrape (default: 100).
+   - `category_url`: URL of the category to scrape (default: top-selling games URL).
+   - `use_database`: Set this flag to `y` or `n` store the scraped data in a database (default: `y`).
+
+4. If needed adjust, the required scraping parameters (number of games to scrape, category to scrape, and whether to store the scraped data in a database).
 
 ## Database Schema
 

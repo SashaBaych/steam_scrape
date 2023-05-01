@@ -13,6 +13,16 @@ from tqdm import tqdm
 
 @logger_decorator
 def selenium_request_category(url: str, num_of_games: int):
+    """
+    Retrieves a list of games for a specific category using Selenium.
+
+    Args:
+        url (str): The URL of the category page to scrape.
+        num_of_games (int): The number of games to retrieve.
+
+    Returns:
+        BeautifulSoup: A BeautifulSoup object containing the parsed HTML of the loaded category page.
+    """
     ua_random = UserAgent().random
     chrome_options = Options()
     chrome_options.add_argument(f"user-agent={ua_random}")
@@ -65,6 +75,16 @@ def selenium_request_category(url: str, num_of_games: int):
 
 @logger_decorator
 def get_basic_game_info_category(url: str, user_game_count: int) -> list:
+    """
+    Retrieves basic information (rank, title, and link) for the specified number of games in a given category.
+
+    Args:
+        url (str): The URL of the category page to scrape.
+        user_game_count (int): The number of games to retrieve.
+
+    Returns:
+        list: A list of dictionaries containing basic information for each game (rank, title, and link).
+    """
     category_soup = selenium_request_category(url, user_game_count)
 
     basic_game_info = []

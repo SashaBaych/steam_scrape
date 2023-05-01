@@ -8,18 +8,16 @@ from steam_utils import get_logger, logger_decorator
 
 logger = get_logger(__file__)
 
+
 def load_config(config_file_path: str) -> dict:
     """
-    Load configuration from the specified JSON file.
+    Loads configuration data from a JSON file.
 
-    Args:
-        config_file_path (str): A string representing the path to the configuration file.
+    Parameters:
+    file_path (str): The path to the JSON file containing the configuration data.
 
     Returns:
-        dict: A dictionary containing the configuration data.
-
-    Raises:
-        Exception: If there's an error while loading the configuration from the file.
+    dict: A dictionary containing the configuration data.
     """
     try:
         logger.info(f"Loading configuration from {config_file_path}...")
@@ -32,11 +30,15 @@ def load_config(config_file_path: str) -> dict:
         logger.info("Terminating program gracefully.")
         exit()
 
+
 @logger_decorator
 def main():
     """
-    Runs a simple steam scraper for a given category and number of games
-    and adds results to the database on demand.
+    The main function to run the Steam web scraper and populate the database.
+
+    This function reads the configuration file, runs the web scraper to collect
+    information about the top-selling games on Steam, creates a catalog object,
+    and populates the MySQL database with the scraped data.
     """
     args = parse_args()
 
@@ -44,7 +46,7 @@ def main():
 
     catalogue = create_game_catalogue(config['urls'][args.category], args.num_games, category=args.category)
 
-    if args.db is True:
+    if args.db == 'y':
         deploy_db(config['db_conf'], config['alch_conf']['database'])
 
         populate_database(catalogue, config['alch_conf'])
@@ -52,10 +54,6 @@ def main():
 
 if __name__ == '__main__':
     main()
-
-
-
-
 
 
 

@@ -10,6 +10,16 @@ from selenium.webdriver.common.by import By
 
 
 def selenium_age_bypass(url: str):
+    """
+    Bypasses age restriction on Steam pages using Selenium and returns the parsed HTML of the page.
+
+    Parameters:
+        url (str): The URL of the Steam page to bypass the age restriction on.
+
+    Returns:
+        BeautifulSoup object or False: If the age restriction is successfully bypassed, it returns a BeautifulSoup
+        object containing the parsed HTML of the page. If an error occurs, it returns False.
+    """
     ua_random = UserAgent().random
     chrome_options = Options()
     chrome_options.add_argument(f"user-agent={ua_random}")

@@ -3,6 +3,7 @@ from fake_useragent import UserAgent
 from bs4 import BeautifulSoup
 from steam_age_bypass import selenium_age_bypass
 import datetime
+from dateutil.parser import parse
 from typing import Optional, List
 from steam_utils import get_logger
 
@@ -47,12 +48,12 @@ def extract_release_date(soup: BeautifulSoup) -> Optional[datetime.date]:
         soup (BeautifulSoup): A BeautifulSoup response object containing the HTML content of the game's webpage.
 
     Returns:
-        datetime.date or None: The release date of the game, or None if the release date cannot be extracted.
+        datetime.date object or None: The release date of the game, or None if the release date cannot be extracted.
     """
     try:
         logger.info("Extracting release date...")
         release = soup.find_all("div", class_="date")[0].text
-        release_date_object = datetime.datetime.strptime(release, '%b %d, %Y').date()
+        release_date_object = parse(release).date()
         logger.info("Release date extracted successfully.")
         return release_date_object
     except Exception as e:
@@ -79,6 +80,7 @@ def extract_developer(soup: BeautifulSoup) -> Optional[str]:
     except Exception as e:
         logger.error(f"Error in extract_developer(): {e}")
         return None
+
 
 def extract_publisher(soup: BeautifulSoup) -> Optional[str]:
     """
