@@ -36,10 +36,13 @@ def logger_decorator(func):
         callable: A wrapper function that calls the original function and logs any errors that occur.
     """
     def wrapper(*args, **kwargs):
+        logger = logging.getLogger(__file__)
+        logger.info(f"Starting {func.__name__} function...")
         try:
-            return func(*args, **kwargs)
+            result = func(*args, **kwargs)
+            logger.info(f"{func.__name__} function executed successfully.")
+            return result
         except Exception as e:
-            logger = logging.getLogger(__file__)
             logger.error(f"Error in {func.__name__}: {e}")
             raise
     return wrapper

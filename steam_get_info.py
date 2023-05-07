@@ -190,6 +190,7 @@ def extract_review_summary(soup: BeautifulSoup) -> Optional[str]:
         logger.error(f"Error in extract_review_summary(): {e}")
         return None
 
+
 def extract_metacritic_score(soup: BeautifulSoup) -> Optional[int]:
     """
     Extracts the Metacritic score of a game from a BeautifulSoup response object.
@@ -256,6 +257,7 @@ def get_game_dicts(urls: list) -> list:
             else:
                 break
         game_dict['name'] = name
+        logger.info(f"Getting detailed info for game: {name}")
         game_dict['release_date'] = extract_release_date(soup)
         game_dict['developer'] = extract_developer(soup)
         game_dict['publisher'] = extract_publisher(soup)

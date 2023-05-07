@@ -9,19 +9,18 @@
         "global": "https://store.steampowered.com/search/?filter=topsellers"
     },
 
-    "db_url": "sqlite:///steamgames.db",
 
     "db_conf": {
-        "user": "root",
-        "password": "Hop357mOp705",
-        "host": "127.0.0.1"
+        "user": "adar_sasha2",
+        "password": "adar_sasha2",
+        "host": "data-mining-db1.cttpnp4olbpx.us-west-1.rds.amazonaws.com"
     },
 
     "alch_conf": {
-        "user": "root",
-        "password": "Hop357mOp705",
-        "host": "127.0.0.1",
-        "database": "steamgames"
+        "user": "adar_sasha2",
+        "password": "adar_sasha2",
+        "host": "data-mining-db1.cttpnp4olbpx.us-west-1.rds.amazonaws.com",
+        "database": "adar_sasha2"
     }
 
 }

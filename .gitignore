@@ -18,4 +18,9 @@ steam_main_12.py
 /m2_steam_scraper.zip
 /m2*
 steamgames*
-
+/selenium_drafts/
+/twitter_drafts/
+/m3_steam_scraper/
+steam_scrape_conf_m3.json
+*.zip
+*.pem

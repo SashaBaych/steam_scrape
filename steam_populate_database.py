@@ -2,7 +2,10 @@ from sqlalchemy.orm import sessionmaker
 from steam_sql_tables import *
 from steam_utils import get_logger, logger_decorator
 
+logger = get_logger(__file__)
+
 # See below the list of tables that populate corresponding tables in the database.
+
 
 @logger_decorator
 def populate_developer(session, developer_name):
@@ -23,6 +26,7 @@ def populate_developer(session, developer_name):
         session.commit()
     return developer
 
+
 @logger_decorator
 def populate_publisher(session, publisher_name):
     """
@@ -41,6 +45,7 @@ def populate_publisher(session, publisher_name):
         session.add(publisher)
         session.commit()
     return publisher
+
 
 @logger_decorator
 def populate_review_summary(session, review_summary_desc):
@@ -61,6 +66,7 @@ def populate_review_summary(session, review_summary_desc):
         session.commit()
     return review_summary
 
+
 @logger_decorator
 def populate_genre(session, genre_name):
     """
@@ -80,6 +86,7 @@ def populate_genre(session, genre_name):
         session.commit()
     return genre
 
+
 @logger_decorator
 def populate_game(session, game):
     """
@@ -92,6 +99,7 @@ def populate_game(session, game):
     Returns:
         Game: A Game object representing the populated database entry.
     """
+    logger.info(f"Populating the 'game' table in the database for {game.name}")
     developer = populate_developer(session, game.info['developer'])
     publisher = populate_publisher(session, game.info['publisher'])
     review_summary = populate_review_summary(session, game.info['review_summary'])
@@ -125,6 +133,7 @@ def populate_game(session, game):
 
     return game_entry
 
+
 @logger_decorator
 def populate_price_history(session, game_entry, price, currency, rank_date):
     """
@@ -146,6 +155,7 @@ def populate_price_history(session, game_entry, price, currency, rank_date):
     )
     session.add(price_history)
     session.commit()
+
 
 @logger_decorator
 def populate_top_selling_history(session, game_entry, rank, rank_date):
