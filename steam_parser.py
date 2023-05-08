@@ -22,6 +22,8 @@ def parse_args():
                         help='Number of games to scrape. Default: 100')
     parser.add_argument('--db', type=str, choices=['y', 'n'], default='y',
                         help='Whether to add scraping results to a database. Choose from: y or n. Default: y')
+    parser.add_argument('--tw', type=str, choices=['y', 'n'], default='n',
+                        help='Whether to enrich database with data from twitter. Choose from: y or n. Default: n')
 
     args = parser.parse_args()
 

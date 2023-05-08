@@ -3,6 +3,7 @@ from steam_parser import parse_args
 from steam_sql_tables import deploy_db
 from steam_populate_database import populate_database
 from steam_create_classes import create_game_catalogue
+from steam_twitter_table import twitter_enrich
 from steam_utils import get_logger, logger_decorator
 
 
@@ -38,7 +39,8 @@ def main():
 
     This function reads the configuration file, runs the web scraper to collect
     information about the top-selling games on Steam, creates a catalog object,
-    and populates the MySQL database with the scraped data.
+    and populates the MySQL database with the scraped data. Enriches database
+    with data from twitter if requested by user.
     """
     args = parse_args()
 
@@ -50,6 +52,8 @@ def main():
         deploy_db(config['db_conf'], config['alch_conf']['database'])
 
         populate_database(catalogue, config['alch_conf'])
+    if args.tw == 'y':
+        twitter_enrich(config['db_conf'])
 
 
 if __name__ == '__main__':

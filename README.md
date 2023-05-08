@@ -44,9 +44,21 @@ The Steam scraper program consists of several Python scripts that work together 
    - `config_path`: Path to the configuration file (mandatory).
    - `num_of_games`: Number of games to scrape (default: 100).
    - `category_url`: URL of the category to scrape (default: top-selling games URL).
-   - `use_database`: Set this flag to `y` or `n` store the scraped data in a database (default: `y`).
+   - `db`: Set this flag to `y` or `n` store the scraped data in a database (default: `y`).
+   - `tw`: Set this flag to `y` or `n` enrich database with data from twitter (default: `n`).
 
-4. If needed adjust, the required scraping parameters (number of games to scrape, category to scrape, and whether to store the scraped data in a database).
+4. If needed adjust, the required scraping parameters (number of games to scrape, category to scrape,  
+   and whether to store the scraped data in a database).
+
+## Recommended application
+
+The best case application is to run scraper every set period of rime to track price changes 
+for a game in a particular category. 
+This will allow to build a comprehensive track of price changes and rating changes for a game.
+The specific drawback of this scraper is that it does not take into account the fact that a game 
+can belong to multiple categories at the same time so every time the scraper encounters such game, 
+its record in the database is rewritten with new category and different top-selling position from a new category,
+which mixes up observations.
 
 ## Database Schema
 
@@ -94,8 +106,13 @@ The database schema consists of the following tables:
    - `game_id`: Foreign key referencing the `game` table.
    - `position`: The position of the game in the top-selling list.
    - `sample_date`: The date when the position was sampled.
+   
+9. **twitter**: Tis table contains information about number of mentions on Twitter for top ten games on a given date.
+   - `game_id`: Foreign key referencing the `game` table.
+   - `mentions_count`: Numver of mentions for a game on a given query date.
+   - `query date`: A date when the query sampling the number of mentions of a game om Twitter was made.
+
+![steamgame_database_edr.png](/Users/Pleasantville/ITC_Studies/Python/webscraping/steam/steamgame_database_edr.png)
 
 **The code to deploy and populate of the database using mysql.connector and SQLAlchemy is provided in detail in 
 the files steam_sql_tables.py and steam_populate_database.py
-
-![steamgame_database_edr.png](..%2F..%2F..%2F..%2FDesktop%2Fsteamgame_database_edr.png)

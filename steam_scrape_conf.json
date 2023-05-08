@@ -13,7 +13,8 @@
     "db_conf": {
         "user": "adar_sasha2",
         "password": "adar_sasha2",
-        "host": "data-mining-db1.cttpnp4olbpx.us-west-1.rds.amazonaws.com"
+        "host": "data-mining-db1.cttpnp4olbpx.us-west-1.rds.amazonaws.com",
+        "database": "adar_sasha2"
     },
 
     "alch_conf": {
