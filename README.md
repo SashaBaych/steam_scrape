@@ -2,7 +2,14 @@
 
 ## Why we selected Steam:
 
-We chose Steam as the target for our web scraper for several reasons. Firstly, video games are becoming a more inspiring anc comprlling medium every high pace. However, more importantly, data scientists are increasingly necessary for successful game design. Modern games collect data about every action, move, or click of the player, and a data scientist can use this data to understand the mechanics of a particular game even better than its creators and designers. This can lead not only to better monetization of the game, but also to an overall better player experience. While Steam does not provide this level of data, it still provides valuable insights to marketing and sales specialists and game creators who want to be more successful.
+We chose Steam as the target for our web scraper for several reasons. Firstly, video games are becoming a more 
+inspiring and compelling medium every high pace. However, more importantly, 
+data scientists are increasingly necessary for successful game design. 
+Modern games collect data about every action, move, or click of the player, 
+and a data scientist can use this data to understand the mechanics of a particular game 
+even better than its creators and designers. This can lead not only to better monetization of the game, 
+but also to an overall better player experience. While Steam does not provide this level of data, 
+it still provides valuable insights to marketing and sales specialists and game creators who want to be more successful.
 
 ## About SteamScraper scraper:
 
@@ -33,6 +40,13 @@ The Steam scraper program consists of several Python scripts that work together 
 
 6. Finally, the steam_populate_database.py script populates the database with the scraped data using the helper functions defined in the steam_sql_tables.py script.
 
+7. In addition, the user is given and option to enrich the database with information from twitter
+   using Twitter API. In particular, retrieve today's number of Twitter mentions for top 10 games 
+   according to the latest scraping date.In addition, the user is given and option to enrich the database with information from twitter
+   using Twitter API. In particular, retrieve today's number of Twitter mentions for top 10 games 
+   according to the latest scraping date. 
+
+
 ## How to Run the Script
 
 1. Edit the steam_scrape_conf.json configuration file with your MySQL access parameters.
@@ -42,13 +56,13 @@ The Steam scraper program consists of several Python scripts that work together 
 
 3. Available parser arguments and options:
    - `config_path`: Path to the configuration file (mandatory).
+   - `category`: Name of the category of games to scrape that points to corresponding link (default `general`: top-selling games URL).
    - `num_of_games`: Number of games to scrape (default: 100).
-   - `category_url`: URL of the category to scrape (default: top-selling games URL).
    - `db`: Set this flag to `y` or `n` store the scraped data in a database (default: `y`).
    - `tw`: Set this flag to `y` or `n` enrich database with data from twitter (default: `n`).
 
-4. If needed adjust, the required scraping parameters (number of games to scrape, category to scrape,  
-   and whether to store the scraped data in a database).
+4. If needed, adjust the required scraping parameters (number of games to scrape, category to scrape,  
+   and whether to store the scraped data in a database and enrich data with information from Twitter). 
 
 ## Recommended application
 
@@ -107,9 +121,9 @@ The database schema consists of the following tables:
    - `position`: The position of the game in the top-selling list.
    - `sample_date`: The date when the position was sampled.
    
-9. **twitter**: Tis table contains information about number of mentions on Twitter for top ten games on a given date.
+9. **twitter**: This table contains information about number of mentions on Twitter for top ten games on a given date.
    - `game_id`: Foreign key referencing the `game` table.
-   - `mentions_count`: Numver of mentions for a game on a given query date.
+   - `mentions_count`: Number of mentions for a game on a given query date.
    - `query date`: A date when the query sampling the number of mentions of a game om Twitter was made.
 
 ![steamgame_database_edr.png](/Users/Pleasantville/ITC_Studies/Python/webscraping/steam/steamgame_database_edr.png)
